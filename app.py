@@ -1,4 +1,9 @@
-# app.py  
+# app.py
+
+import sys
+sys.path.extend([r"/data/env/studyPoem-server/studyPoem-server"])
+
+
 from flask import Flask, jsonify
 from config import Config
 from models import db, get_one_random_poem

@@ -3,7 +3,10 @@
 ## 环境准备
 **python环境**：python3.10  
 **依赖**：  
-pip install flask
+pip3 install flask  
+pip3 install Flask-SQLAlchemy  
+pip3 install PyMySQL
+
 
 ## 部署服务
 本地部署：  
