@@ -9,3 +9,8 @@ pip install flask
 本地部署：  
 cd /d D:/xiaochengxu/studyPoem-server  
 python app.py
+
+远程部署：  
+在项目目录下维护config.py中的数据库信息  
+git pull最新代码  
+python app.py重启服务  
