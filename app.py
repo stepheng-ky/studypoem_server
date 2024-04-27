@@ -5,7 +5,7 @@ from config import Config
 from models import db, _get_one_random_poem, _get_poem_by_id, _get_all_poems
 from datetime import datetime
 
-sys.path.extend([r"/data/env/studyPoem-server/studyPoem-server"])
+sys.path.extend([r"/data/env/studyPoem-server/studypoem_server"])
 
 
 app = Flask(__name__)
