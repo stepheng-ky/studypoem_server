@@ -49,7 +49,7 @@ def get_poem_by_id():
     # 调用函数获取诗词详情
     poem = _get_poem_by_id(poem_id)
     if poem is None:
-        return jsonify({'error': '古诗 not found!'}), 404
+        return jsonify({'error': f'古诗{poem_id} not found!'}), 404
     return jsonify(poem)
 
 
@@ -74,7 +74,7 @@ def get_poems_by_category_id():
     # 调用函数获取诗词详情
     category = _get_poems_by_category_id(category_id)
     if category is None:
-        return jsonify({'error': '类别 not found!'}), 404
+        return jsonify({'error': f'类别{category_id} not found!'}), 404
     return jsonify(category)
 
 

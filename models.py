@@ -93,6 +93,8 @@ def _get_poems_by_category_id(category_id):
     result = {'category_id': category_id}
     # 类别信息
     category = Categories.query.get(category_id)
+    if not category:
+        return
     result.update({'category_name': category.category_name})
     # 诗词信息
     category_poems = [{'second_level_category': category_poem.second_level_category,
