@@ -42,7 +42,7 @@ def get_all_poems():
 def _get_poem_details():
     """
     根据id返回古诗详情
-    http://127.0.0.1:5000/studypoem/poem_details?id=af4715c0208f
+    test：http://127.0.0.1:5000/studypoem/poem_details?id=af4715c0208f
     :return:
     """
     # 获取查询参数 'id'
