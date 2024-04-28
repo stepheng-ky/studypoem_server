@@ -27,6 +27,26 @@ class CategoryPoem(db.Model):
     second_level_category = db.Column(db.String(255))
     id = db.Column(db.String(255), primary_key=True)
 
+class Users(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True)
+    user_name = db.Column(db.String(255))
+
+class Plans(db.Model):
+    plan_id = db.Column(db.Integer, primary_key=True)
+    plan_name = db.Column(db.String(255), primary_key=True)
+    is_public = db.Column(db.Integer,default=1)
+
+class PlanDetails(db.Model):
+    plan_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(255), primary_key=True)
+    poem_sort = db.Column(db.Integer, nullable=False)
+
+
+class UserPlans(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True)
+    plan_id = db.Column(db.Integer, primary_key=True)
+    is_default = db.Column(db.Integer,default=0)
+
 
 def model_to_dict(model):
     """
@@ -116,14 +136,16 @@ def _get_poems_by_category_id(category_id):
 def _get_openid(code):
     """
     根据code返回微信的openid和session_key
+    小程序可以通过getUserInfo直接获取用户信息，https://developers.weixin.qq.com/miniprogram/dev/api/open-api/user-info/wx.getUserInfo.html
     :param code:
     :return:
     """
     APPID = Config.APPID
     APPSECRET = Config.APPSECRET
     url = f"https://api.weixin.qq.com/sns/jscode2session?appid={APPID}&secret={APPSECRET}&js_code={code}&grant_type=authorization_code"
-    # 发起请求到微信服务器
+    # 发起请求
     response = requests.get(url)
     result = response.json()
+    print(f'result:{result}')
     return result
 

@@ -5,13 +5,13 @@
 **依赖**：  
 pip3 install flask  
 pip3 install Flask-SQLAlchemy  
-pip3 install PyMySQL
-
+pip3 install PyMySQL  
+pip3 install requests  
 
 ## 部署服务
 本地部署：  
 cd /d D:/xiaochengxu/studyPoem-server  
-python app.py
+python app.py  
 
 远程部署：  
 在项目目录下维护config.py中的数据库信息  
