@@ -1,6 +1,8 @@
 # models.py
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
+from config import Config
+import requests
 
 db = SQLAlchemy()
 
@@ -109,3 +111,19 @@ def _get_poems_by_category_id(category_id):
                              ]
                    })
     return result
+
+
+def _get_openid(code):
+    """
+    根据code返回微信的openid和session_key
+    :param code:
+    :return:
+    """
+    APPID = Config.APPID
+    APPSECRET = Config.APPSECRET
+    url = f"https://api.weixin.qq.com/sns/jscode2session?appid={APPID}&secret={APPSECRET}&js_code={code}&grant_type=authorization_code"
+    # 发起请求到微信服务器
+    response = requests.get(url)
+    result = response.json()
+    return result
+

@@ -2,7 +2,8 @@
 import sys
 from flask import Flask, jsonify, request
 from config import Config
-from models import db, _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories,_get_poems_by_category_id
+from models import db, _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories, \
+    _get_poems_by_category_id, _get_openid
 from datetime import datetime
 
 sys.path.extend([r"/data/env/studyPoem-server/studypoem_server"])
@@ -75,7 +76,23 @@ def get_poems_by_category_id():
     category = _get_poems_by_category_id(category_id)
     if category is None:
         return jsonify({'error': f'类别{category_id} not found!'}), 404
+    print(f'category={category}\n')
     return jsonify(category)
+
+
+@app.route('/studypoem/openid', methods=['POST'])
+def get_openid():
+    """
+    根据code获取微信的openid和session_key
+    :return:
+    """
+    print(f'开始请求...')
+    code = request.json.get('code')
+    print(f'code={code}')
+    result = _get_openid(code)
+    if result is None:
+        return jsonify({'error': f'获取用户：{code} not found!'}), 404
+    return jsonify(result)
 
 
 if __name__ == '__main__':
