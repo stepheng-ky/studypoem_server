@@ -1,24 +1,25 @@
-# app.py
-import sys
-from flask import Flask, jsonify, request
-from config import Config
-from models import db, _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories, \
-    _get_poems_by_category_id, _get_openid
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2024/4/29 11:26
+# @Author  : Stepheng
+# @Email   : 1142262478@qq.com
+# @File    : routes.py
+# 功能描述  ：路由控制
+
 from datetime import datetime
+from flask import jsonify, request, Blueprint
+from app.services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories, \
+    _get_poems_by_category_id, _get_openid
 
-sys.path.extend([r"/data/env/studyPoem-server/studypoem_server"])
+# 使用 prefix 参数定义蓝图的前缀为 '/studypoem'
+routes = Blueprint('studypoem', __name__, url_prefix='/studypoem')
 
-app = Flask(__name__)
-app.config.from_object(Config)  # 加载配置
-db.init_app(app)
-
-
-@app.route('/studypoem')
+@routes.route('/')
 def helloworld():
     return f'hello-world {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
 
 
-@app.route('/studypoem/random_poem', methods=['GET'])
+@routes.route('/random_poem', methods=['GET'])
 def get_random_poem():
     """
     随机返回一首古诗
@@ -28,7 +29,7 @@ def get_random_poem():
     return jsonify(poem)
 
 
-@app.route('/studypoem/all_poems', methods=['GET'])
+@routes.route('/all_poems', methods=['GET'])
 def get_all_poems():
     """
     返回所有古诗
@@ -38,7 +39,7 @@ def get_all_poems():
     return jsonify(poems)
 
 
-@app.route('/studypoem/poem_details', methods=['GET'])
+@routes.route('/poem_details', methods=['GET'])
 def get_poem_by_id():
     """
     根据id返回古诗详情
@@ -54,7 +55,7 @@ def get_poem_by_id():
     return jsonify(poem)
 
 
-@app.route('/studypoem/all_categories', methods=['GET'])
+@routes.route('/all_categories', methods=['GET'])
 def get_all_categories():
     """
     返回所有古诗类别
@@ -64,7 +65,7 @@ def get_all_categories():
     return jsonify(categories)
 
 
-@app.route('/studypoem/category', methods=['GET'])
+@routes.route('/category', methods=['GET'])
 def get_poems_by_category_id():
     """
     根据类别id返回古诗s
@@ -80,7 +81,7 @@ def get_poems_by_category_id():
     return jsonify(category)
 
 
-@app.route('/studypoem/openid', methods=['POST'])
+@routes.route('/openid', methods=['POST'])
 def get_openid():
     """
     根据code获取微信的openid和session_key
@@ -93,7 +94,3 @@ def get_openid():
     if result is None:
         return jsonify({'error': f'获取用户：{code} not found!'}), 404
     return jsonify(result)
-
-
-if __name__ == '__main__':
-    app.run()
