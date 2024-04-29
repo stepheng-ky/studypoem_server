@@ -8,9 +8,9 @@
 import sys
 
 from flask import Flask
-from app.config import Config
-from app.config import db
-from app.routes import routes
+from .config import Config
+from .config import db
+from .routes import routes
 
 sys.path.extend([r"/data/env/studyPoem-server/studypoem_server"])
 
