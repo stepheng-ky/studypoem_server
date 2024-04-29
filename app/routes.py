@@ -16,7 +16,7 @@ routes = Blueprint('studypoem', __name__, url_prefix='/studypoem')
 
 @routes.route('/')
 def helloworld():
-    return f'hello-world {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
+    return f'好好学习\n 天天向上\n {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
 
 
 @routes.route('/random_poem', methods=['GET'])
