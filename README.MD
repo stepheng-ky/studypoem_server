@@ -9,6 +9,29 @@ pip3 install PyMySQL
 pip3 install requests  
 
 ## 目录结构
+.  
+├── app  
+│   ├── app.py  
+│   ├── config.py  
+│   ├── __init__.py  
+│   ├── models  
+│   │   ├── category.py  
+│   │   ├── __init__.py  
+│   │   ├── plan.py  
+│   │   ├── poem.py  
+│   │   └── user.py  
+│   ├── nohup.out  
+│   ├── routes.py  
+│   ├── services  
+│   │   ├── category_service.py  
+│   │   ├── __init__.py  
+│   │   ├── plan_service.py  
+│   │   ├── poem_service.py  
+│   │   └── user_service.py  
+│   └── utils.py  
+├── __init__.py  
+└── README.MD  
+  
 
 
 ## 部署服务
