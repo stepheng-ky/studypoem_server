@@ -5,11 +5,14 @@
 # @Email   : 1142262478@qq.com
 # @File    : config.py
 # 功能描述  ：主应用入口
+import sys
 
 from flask import Flask
 from app.config import Config
 from app.config import db
 from app.routes import routes
+
+sys.path.extend([r"/data/env/studyPoem-server/studypoem_server"])
 
 app = Flask(__name__)
 app.config.from_object(Config)
