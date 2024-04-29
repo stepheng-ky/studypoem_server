@@ -13,10 +13,9 @@ pip3 install requests
 
 ## 部署服务
 本地部署：  
-cd /d D:/xiaochengxu/studyPoem-server/app  
-python app.py  
+python -m app.app  
 
 远程部署：  
 在项目目录下维护config.py中的数据库信息  
 git pull最新代码  
-python app.py重启服务  
+python -m app.app 
