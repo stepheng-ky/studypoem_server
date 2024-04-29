@@ -8,7 +8,7 @@
 
 from datetime import datetime
 from flask import jsonify, request, Blueprint
-from app.services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories, \
+from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories, \
     _get_poems_by_category_id, _get_openid
 
 # 使用 prefix 参数定义蓝图的前缀为 '/studypoem'

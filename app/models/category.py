@@ -6,7 +6,7 @@
 # @File    : category.py
 # 功能描述  ： 诗词类别
 
-from app.config import db
+from ..config import db
 
 class Categories(db.Model):
     category_id = db.Column(db.Integer, primary_key=True)

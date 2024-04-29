@@ -5,7 +5,7 @@
 # @Email   : 1142262478@qq.com
 # @File    : plan.py
 # 功能描述  ：学习计划
-from app.config import db
+from ..config import db
 
 class Plans(db.Model):
     plan_id = db.Column(db.Integer, primary_key=True)

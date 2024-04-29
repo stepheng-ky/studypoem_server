@@ -5,7 +5,7 @@
 # @Email   : 1142262478@qq.com
 # @File    : poem.py
 # 功能描述  ：诗词
-from app.config import db
+from ..config import db
 
 class Poems(db.Model):
     id = db.Column(db.String(255), primary_key=True)

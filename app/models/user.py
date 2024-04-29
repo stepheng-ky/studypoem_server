@@ -5,7 +5,7 @@
 # @Email   : 1142262478@qq.com
 # @File    : user.py
 # 功能描述  ：用户
-from app.config import db
+from ..config import db
 
 class Users(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)

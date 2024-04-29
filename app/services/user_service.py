@@ -6,7 +6,7 @@
 # @File    : user_service.py
 # 功能描述  ：用户服务
 import requests
-from app.config import Config
+from ..config import Config
 
 
 def _get_openid(code):

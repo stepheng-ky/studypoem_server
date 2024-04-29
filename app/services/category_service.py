@@ -6,8 +6,8 @@
 # @File    : category_service.py
 # 功能描述  ：类别服务
 
-from app.models import Categories, CategoryPoem, Poems
-from app.utils import model_to_dict
+from ..models import Categories, CategoryPoem, Poems
+from ..utils import model_to_dict
 
 def _get_all_categories():
     """

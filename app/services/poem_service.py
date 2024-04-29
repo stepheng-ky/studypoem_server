@@ -6,8 +6,8 @@
 # @File    : poem_service.py
 # 功能描述  ：诗词服务
 from sqlalchemy import func
-from app.models import Poems
-from app.utils import model_to_dict
+from ..models import Poems
+from ..utils import model_to_dict
 
 
 def _get_one_random_poem():
