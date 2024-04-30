@@ -6,13 +6,31 @@
 # @File    : routes.py
 # 功能描述  ：路由控制
 
+import uuid
 from datetime import datetime
-from flask import jsonify, request, Blueprint
+from flask import jsonify, request, Blueprint,current_app
+from werkzeug.utils import secure_filename
 from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories, \
     _get_poems_by_category_id, _get_openid
 
 # 使用 prefix 参数定义蓝图的前缀为 '/studypoem'
 routes = Blueprint('studypoem', __name__, url_prefix='/studypoem')
+
+
+# 记录请求信息的请求钩子
+@routes.before_request
+def before_request():
+    request_id = secure_filename(str(uuid.uuid4()))  # 使用uuid库生成UUID
+    request.environ['REQUEST_ID'] = request_id  # 将请求ID存储在request.environ中
+    current_app.logger.info(f"Request: method:{request.method}, url:{request.url}, args:{request.args}")
+
+
+# 记录响应信息的请求钩子
+@routes.after_request
+def after_request(response):
+    current_app.logger.info(f"Response-status_code:{response.status_code}")
+    # 注意：不要在这里记录大型响应体，因为这可能会降低性能
+    return response
 
 @routes.route('/')
 def helloworld():
@@ -26,6 +44,7 @@ def get_random_poem():
     :return:
     """
     poem = _get_one_random_poem()
+    current_app.logger.info(f"Response-data: poem:{poem}")
     return jsonify(poem)
 
 
@@ -36,6 +55,7 @@ def get_all_poems():
     :return:
     """
     poems = _get_all_poems()
+    current_app.logger.info(f"Response-data: poems:{poems}")
     return jsonify(poems)
 
 
@@ -50,6 +70,7 @@ def get_poem_by_id():
     poem_id = request.args.get('id')
     # 调用函数获取诗词详情
     poem = _get_poem_by_id(poem_id)
+    current_app.logger.info(f"Response-data: poem:{poem}")
     if poem is None:
         return jsonify({'error': f'古诗{poem_id} not found!'}), 404
     return jsonify(poem)
@@ -62,6 +83,7 @@ def get_all_categories():
     :return:
     """
     categories = _get_all_categories()
+    current_app.logger.info(f"Response-data: categories:{categories}")
     return jsonify(categories)
 
 
@@ -75,9 +97,9 @@ def get_poems_by_category_id():
     category_id = request.args.get('category_id')
     # 调用函数获取诗词详情
     category = _get_poems_by_category_id(category_id)
+    current_app.logger.info(f"Response-data: category:{category}")
     if category is None:
         return jsonify({'error': f'类别{category_id} not found!'}), 404
-    print(f'category={category}\n')
     return jsonify(category)
 
 
@@ -87,10 +109,9 @@ def get_openid():
     根据code获取微信的openid和session_key
     :return:
     """
-    print(f'开始请求...')
     code = request.json.get('code')
-    print(f'code={code}')
     result = _get_openid(code)
+    current_app.logger.info(f"Response-data: result:{result}")
     if result is None:
         return jsonify({'error': f'获取用户：{code} not found!'}), 404
     return jsonify(result)
