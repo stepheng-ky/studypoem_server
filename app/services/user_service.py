@@ -37,5 +37,7 @@ def _get_user_plans_by_user_id(user_id):
     """
     plans = [model_to_dict(plan) for plan in UserPlans.query.filter_by(user_id=user_id)]
     for plan in plans:
-        plan['plan_name'] = _get_plan_by_id(plan['plan_id'])['plan_name']
+        _plan = _get_plan_by_id(plan['plan_id'])
+        plan['plan_name'] = _plan['plan_name']
+        plan['start_date'] = _plan['start_date']
     return plans
