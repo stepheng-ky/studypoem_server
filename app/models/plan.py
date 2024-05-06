@@ -19,3 +19,4 @@ class PlanDetails(db.Model):
     plan_id = db.Column(db.Integer, primary_key=True)
     id = db.Column(db.String(255), primary_key=True)
     poem_sort = db.Column(db.Integer, nullable=False)
+    is_learned = db.Column(db.Integer)
