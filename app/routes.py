@@ -8,12 +8,15 @@
 
 import uuid
 from datetime import datetime
-from flask import jsonify, request, Blueprint,current_app
+from flask import jsonify, request, Blueprint, current_app
 from werkzeug.utils import secure_filename
 from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories, \
     _get_poems_by_category_id, _get_openid
 
 # 使用 prefix 参数定义蓝图的前缀为 '/studypoem'
+from .services.plan_service import _get_plan_details_by_id
+from .services.user_service import _get_user_plans_by_user_id
+
 routes = Blueprint('studypoem', __name__, url_prefix='/studypoem')
 
 
@@ -31,6 +34,7 @@ def after_request(response):
     current_app.logger.info(f"Response-status_code:{response.status_code}")
     # 注意：不要在这里记录大型响应体，因为这可能会降低性能
     return response
+
 
 @routes.route('/')
 def helloworld():
@@ -115,3 +119,36 @@ def get_openid():
     if result is None:
         return jsonify({'error': f'获取用户：{code} not found!'}), 404
     return jsonify(result)
+
+
+@routes.route('/user_plans', methods=['GET'])
+def get_user_plans_by_user_id():
+    """
+    根据user_id返回用户计划列表
+    test：http://127.0.0.1:5000/studypoem/user_plans?user_id=1
+    :return:
+    """
+    # 获取查询参数 'user_id'
+    user_id = request.args.get('user_id')
+    # 调用函数获取学习计划列表
+    plans = _get_user_plans_by_user_id(user_id)
+    current_app.logger.info(f"Response-data: plans:{plans}")
+    if plans is None:
+        return jsonify({'error': f'用户{user_id} not found!'}), 404
+    return jsonify(plans)
+
+@routes.route('/plan_details', methods=['GET'])
+def get_plan_details_by_id():
+    """
+    根据plan_id返回计划详情
+    test：http://127.0.0.1:5000/studypoem/plan_details?plan_id=1
+    :return:
+    """
+    # 获取查询参数 'plan_id'
+    plan_id = request.args.get('plan_id')
+    # 调用函数获取学习计划详情
+    plan = _get_plan_details_by_id(plan_id)
+    current_app.logger.info(f"Response-data: plan:{plan}")
+    if plan is None:
+        return jsonify({'error': f'计划{plan_id} not found!'}), 404
+    return jsonify(plan)

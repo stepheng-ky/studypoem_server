@@ -7,6 +7,7 @@
 # 功能描述  ：用户
 from ..config import db
 
+
 class Users(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(255))
@@ -15,4 +16,4 @@ class Users(db.Model):
 class UserPlans(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     plan_id = db.Column(db.Integer, primary_key=True)
-    is_default = db.Column(db.Integer,default=0)
+    is_default = db.Column(db.Integer, default=0)

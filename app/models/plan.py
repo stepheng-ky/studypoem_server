@@ -7,10 +7,12 @@
 # 功能描述  ：学习计划
 from ..config import db
 
+
 class Plans(db.Model):
     plan_id = db.Column(db.Integer, primary_key=True)
-    plan_name = db.Column(db.String(255), primary_key=True)
-    is_public = db.Column(db.Integer,default=1)
+    plan_name = db.Column(db.String(255))
+    is_public = db.Column(db.Integer, default=1)
+
 
 class PlanDetails(db.Model):
     plan_id = db.Column(db.Integer, primary_key=True)

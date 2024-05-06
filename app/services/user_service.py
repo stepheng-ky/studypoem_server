@@ -6,7 +6,11 @@
 # @File    : user_service.py
 # 功能描述  ：用户服务
 import requests
+
+from .plan_service import _get_plan_by_id
 from ..config import Config
+from ..models import Users, UserPlans
+from ..utils import model_to_dict
 
 
 def _get_openid(code):
@@ -26,3 +30,12 @@ def _get_openid(code):
     print(f'result:{result}')
     return result
 
+
+def _get_user_plans_by_user_id(user_id):
+    """
+    根据user_id返回用户的学习计划列表
+    """
+    plans = [model_to_dict(plan) for plan in UserPlans.query.filter_by(user_id=user_id)]
+    for plan in plans:
+        plan['plan_name'] = _get_plan_by_id(plan['plan_id'])['plan_name']
+    return plans
