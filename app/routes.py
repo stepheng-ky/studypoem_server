@@ -137,6 +137,7 @@ def get_user_plans_by_user_id():
         return jsonify({'error': f'用户{user_id} not found!'}), 404
     return jsonify(plans)
 
+
 @routes.route('/plan_details', methods=['GET'])
 def get_plan_details_by_id():
     """
