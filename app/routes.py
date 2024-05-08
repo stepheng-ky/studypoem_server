@@ -15,6 +15,7 @@ from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _ge
 
 # 使用 prefix 参数定义蓝图的前缀为 '/studypoem'
 from .services.plan_service import _get_plan_details_by_id
+from .services.poem_service import _search
 from .services.user_service import _get_user_plans_by_user_id
 
 routes = Blueprint('studypoem', __name__, url_prefix='/studypoem')
@@ -153,3 +154,20 @@ def get_plan_details_by_id():
     if plan is None:
         return jsonify({'error': f'计划{plan_id} not found!'}), 404
     return jsonify(plan)
+
+
+@routes.route('/search', methods=['GET'])
+def search():
+    """
+    根据q返回模糊匹配到的所有诗词
+    test：http://127.0.0.1:5000/studypoem/search?q=李白
+    :return:
+    """
+    # 获取查询参数 'q'
+    q = request.args.get('q')
+    # 调用函数获取学习计划详情
+    poems = _search(q)
+    current_app.logger.info(f"Response-data: poems:{poems}")
+    if poems is None:
+        return jsonify({'error': f'模糊搜索关键字【{q}】没有结果!'}), 404
+    return jsonify(poems)

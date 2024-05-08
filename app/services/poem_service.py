@@ -5,7 +5,7 @@
 # @Email   : 1142262478@qq.com
 # @File    : poem_service.py
 # 功能描述  ：诗词服务
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from ..models import Poems
 from ..utils import model_to_dict
 
@@ -35,5 +35,22 @@ def _get_all_poems():
     :return:
     """
     poems = Poems.query.all()
+    poems_list = [model_to_dict(poem) for poem in poems]
+    return poems_list
+
+
+def _search(q):
+    """
+    根据关键字q，模糊搜索poems的title、author、content，返回匹配到的结果
+    :param q:入参 搜索关键字
+    :return:
+    """
+    poems = Poems.query.filter(
+        or_(
+            Poems.title.like(f'%{q}%'),
+            Poems.author.like(f'%{q}%'),
+            Poems.content.like(f'%{q}%')
+        )
+    ).all()
     poems_list = [model_to_dict(poem) for poem in poems]
     return poems_list
