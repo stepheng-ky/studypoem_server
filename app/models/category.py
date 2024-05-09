@@ -8,6 +8,7 @@
 
 from ..config import db
 
+
 class Categories(db.Model):
     category_id = db.Column(db.Integer, primary_key=True)
     category_name = db.Column(db.String(255), nullable=False)
@@ -16,4 +17,5 @@ class Categories(db.Model):
 class CategoryPoem(db.Model):
     category_id = db.Column(db.Integer, primary_key=True)
     second_level_category = db.Column(db.String(255))
-    id = db.Column(db.String(255), primary_key=True)
+    poem_id = db.Column(db.String(255), primary_key=True)
+    second_level_category_order = db.Column(db.Integer)
