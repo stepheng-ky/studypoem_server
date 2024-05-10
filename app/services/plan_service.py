@@ -24,7 +24,7 @@ def _get_plan_details_by_id(plan_id):
     """
     plans = [model_to_dict(plan) for plan in PlanDetails.query.filter_by(plan_id=plan_id).order_by(PlanDetails.poem_sort.asc()) ]
     for plan in plans:
-        # plan['learn_time'] = plan['learn_time'].strftime("%Y-%m-%d %H:%M:%S") if plan['learn_time'] else None # 时间格式化
+        plan['learn_time'] = plan['learn_time'].strftime("%Y/%m/%d %H:%M:%S") if plan['learn_time'] else None # 时间格式化
         poem = _get_poem_by_id(plan['id'])
         plan['title'] = poem['title']
         plan['zhailu'] = poem['zhailu']
