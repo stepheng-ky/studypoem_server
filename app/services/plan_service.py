@@ -15,6 +15,7 @@ def _get_plan_by_id(plan_id):
     根据plan_id获取plan信息
     """
     plan = model_to_dict(Plans.query.get(plan_id))
+    plan['start_date'] = plan['start_date'].strftime("%Y/%m/%d %H:%M:%S") if plan['start_date'] else None  # 时间格式化
     return plan
 
 
