@@ -112,10 +112,13 @@ def get_poems_by_category_id():
 def get_openid():
     """
     根据code获取微信的openid和session_key
+    test：http://127.0.0.1:5000/studypoem/openid?code=123
     :return:
     """
     code = request.json.get('code')
-    result = _get_openid(code)
+    avatarUrl = request.json.get('avatarUrl')
+    nickName = request.json.get('nickName')
+    result = _get_openid(code,avatarUrl,nickName)
     current_app.logger.info(f"Response-data: result:{result}")
     if result is None:
         return jsonify({'error': f'获取用户：{code} not found!'}), 404

@@ -9,8 +9,10 @@ from ..config import db
 
 
 class Users(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(20), primary_key=True)
     user_name = db.Column(db.String(255))
+    source = db.Column(db.String(20))
+    avatarUrl = db.Column(db.String(255))
 
 
 class UserPlans(db.Model):
