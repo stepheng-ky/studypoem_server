@@ -26,10 +26,11 @@ def _get_openid(code, avatarUrl, nickName):
     APPSECRET = Config.APPSECRET
     WX_API_URL = Config.WX_API_URL
     url = f"{WX_API_URL}/sns/jscode2session?appid={APPID}&secret={APPSECRET}&js_code={code}&grant_type=authorization_code"
-    response = requests.get(url)
-    result = response.json()  # {"session_key":"mMMaFzGz5YTQ/xgUXuwBeQ==","openid":"oFzO86665d2q_kaIC_jLoSlwLTIk"}
+    # {"session_key":"mMMaFzGz5YTQ/xgUXuwBeQ==","openid":"oFzO86665d2q_kaIC_jLoSlwLTIk"}
+    response = requests.get(url).json()
     # 获取openid 并判断如果不存在就存储下来
-    openid = result.get('openid')
+    openid = response.get('openid')
+    result = {"openid": openid}
     if openid:
         source = 'wx'
         _update_or_create_user(user_id=openid, user_name=nickName, source=source, avatarUrl=avatarUrl)
