@@ -47,13 +47,13 @@ def _update_or_create_user(user_id, user_name, source, avatarUrl):
     :return:
     """
     user = Users.query.get(user_id)
-    print(f'入参 {user_id}：{user_name}、{source}、{avatarUrl}，user:{user}')
+    # print(f'入参 {user_id}：{user_name}、{source}、{avatarUrl}，user:{user}')
     if user:
         # 如果存在对应的记录，则更新其他字段
         user.user_name = user_name
         user.source = source
         user.avatarUrl = avatarUrl
-        print(f'更新用户{user_id}：{user_name}、{source}、{avatarUrl}')
+        # print(f'更新用户{user_id}：{user_name}、{source}、{avatarUrl}')
     else:
         # 如果不存在对应的记录，则新增一条新的记录
         new_user = Users(user_id=user_id, user_name=user_name, source=source, avatarUrl=avatarUrl)

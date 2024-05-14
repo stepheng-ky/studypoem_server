@@ -9,10 +9,11 @@ import logging
 import sys
 from logging.handlers import RotatingFileHandler
 from flask import Flask, request
-from .config import Config,db
+from .config import Config, db
 from .routes import routes
 
 sys.path.extend([r"/data/env/studyPoem-server/studypoem_server"])
+
 
 def create_app():
     app = Flask(__name__)
@@ -33,13 +34,14 @@ def create_app():
     file_handler = RotatingFileHandler('app/logs/app.log', maxBytes=10240, backupCount=3)
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
-    file_handler.addFilter(RequestIDFilter()) # 添加过滤器
+    file_handler.addFilter(RequestIDFilter())  # 添加过滤器
     app.logger.addHandler(file_handler)
 
     app.config.from_object(Config)  # 加载配置
-    db.init_app(app) # 初始化数据库
+    db.init_app(app)  # 初始化数据库
     app.register_blueprint(routes)  # 注册路由
     return app
+
 
 if __name__ == '__main__':
     app = create_app()

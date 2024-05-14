@@ -73,7 +73,7 @@ def _get_poems_by_category_id(category_id):
                              for category_poem in category_poems
                              ]
                    })
-    print(f'result:{result}')
+    # print(f'result:{result}')
     result_final = optimize_poems(result)
-    print(f'result_final:{result_final}')
+    # print(f'result_final:{result_final}')
     return result_final
