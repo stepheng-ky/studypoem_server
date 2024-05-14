@@ -14,7 +14,7 @@ from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _ge
     _get_poems_by_category_id, _get_openid
 
 # 使用 prefix 参数定义蓝图的前缀为 '/studypoem'
-from .services.plan_service import _get_plan_details_by_id
+from .services.plan_service import _get_plan_details_by_id, _mark_learned
 from .services.poem_service import _search
 from .services.user_service import _get_user_plans_by_user_id
 
@@ -112,7 +112,12 @@ def get_poems_by_category_id():
 def get_openid():
     """
     根据code获取微信的openid和session_key
-    test：http://127.0.0.1:5000/studypoem/openid?code=123
+    test：http://127.0.0.1:5000/studypoem/openid
+    body:{
+        "code": "code",
+        "nickName":"nickName",
+        "avatarUrl":”avatarUrl“
+    }
     :return:
     """
     code = request.json.get('code')
@@ -129,7 +134,7 @@ def get_openid():
 def get_user_plans_by_user_id():
     """
     根据user_id返回用户计划列表
-    test：http://127.0.0.1:5000/studypoem/user_plans?user_id=1
+    test：http://127.0.0.1:5000/studypoem/user_plans
     :return:
     """
     # 获取查询参数 'user_id'
@@ -174,3 +179,25 @@ def search():
     if poems is None:
         return jsonify({'error': f'模糊搜索关键字【{q}】没有结果!'}), 404
     return jsonify(poems)
+
+
+@routes.route('/mark_learned', methods=['POST'])
+def mark_learned():
+    """
+    根据id打卡，修改为已学习
+    test：http://127.0.0.1:5000/studypoem/mark_learned
+    body:{
+        "plan_id": plan_id,
+        "id":"id",
+        "is_learned":1/0
+    }
+    :return:
+    """
+    plan_id = request.json.get('plan_id')
+    id = request.json.get('id')
+    is_learned = request.json.get('is_learned')
+    result = _mark_learned(plan_id, id, is_learned)
+    current_app.logger.info(f"Response-data: result:{result}")
+    if result is None:
+        return jsonify({'error': f'计划{plan_id}的诗{id}打卡失败!'}), 500
+    return jsonify(result)
