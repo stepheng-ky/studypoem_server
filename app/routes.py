@@ -8,7 +8,7 @@
 
 import uuid
 from datetime import datetime
-from flask import jsonify, request, Blueprint, current_app
+from flask import jsonify, request, Blueprint, current_app, send_file
 from werkzeug.utils import secure_filename
 from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories, \
     _get_poems_by_category_id, _get_openid
@@ -201,3 +201,14 @@ def mark_learned():
     if result is None:
         return jsonify({'error': f'计划{plan_id}的诗{id}打卡失败!'}), 500
     return jsonify(result)
+
+@routes.route('/get_png/<filename>', methods=['GET'])
+def get_png(filename):
+    """
+    获取图片
+    test：http://127.0.0.1:5000/studypoem/get_png/test.png
+    """
+    try:
+        return send_file(f'poems_png/{filename}', mimetype='image/png')
+    except FileNotFoundError:
+        return f"File {filename} not found", 404
