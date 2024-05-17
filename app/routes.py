@@ -39,8 +39,51 @@ def after_request(response):
 
 @routes.route('/')
 def helloworld():
-    return f'好好学习\n 天天向上\n {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
-
+    poem = """
+    君不见黄河之水天上来，奔流到海不复回。<br><br>
+    君不见高堂明镜悲白发，朝如青丝暮成雪。<br><br>
+    人生得意须尽欢，莫使金樽空对月。<br><br>
+    天生我材必有用，千金散尽还复来。<br><br>
+    烹羊宰牛且为乐，会须一饮三百杯。<br><br>
+    岑夫子，丹丘生，将进酒，杯莫停。<br><br>
+    与君歌一曲，请君为我侧耳听。<br><br>
+    钟鼓馔玉不足贵，但愿长醉不复醒。<br><br>
+    古来圣贤皆寂寞，惟有饮者留其名。<br><br>
+    陈王昔时宴平乐，斗酒十千恣欢谑。<br><br>
+    主人何为言少钱，径须沽取对君酌。<br><br>
+    五花马、千金裘，呼儿将出换美酒，与尔同销万古愁。
+    """
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return f'''
+    <html>
+    <head>
+    <style>
+    body {{
+        background-color: gray; /* Light gray background color */
+        font-family: Arial, sans-serif; /* Font family */
+        color: blue; /* Text color */
+    }}
+    .poem-container {{
+        text-align: center;
+        margin-top: 20%;
+        font-size: 24px; /* Font size for the poem */
+    }}
+    .time-container {{
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 14px; /* Font size for the time */
+    }}
+    </style>
+    </head>
+    <body>
+    <div class="poem-container">
+        <p>{poem}</p>
+    </div>
+    <div class="time-container">{current_time}</div>
+    </body>
+    </html>
+    '''
 
 @routes.route('/random_poem', methods=['GET'])
 def get_random_poem():
