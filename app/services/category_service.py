@@ -66,14 +66,13 @@ def _get_poems_by_category_id(category_id):
     category_poems = [{'second_level_category': category_poem.second_level_category,
                        'poem': model_to_dict(Poems.query.get(category_poem.poem_id))}
                       for category_poem in
-                      CategoryPoem.query.filter_by(category_id=category_id).order_by(CategoryPoem.second_level_category_order.asc()).all()]
+                      CategoryPoem.query.filter_by(category_id=category_id).order_by(
+                          CategoryPoem.second_level_category_order.asc()).all()]
     result.update({'poems': [{'second_level_category': category_poem.get('second_level_category'),
                               'poem': category_poem.get('poem')
                               }
-                             for category_poem in category_poems
+                             for category_poem in category_poems if category_poem.get('poem')
                              ]
                    })
-    # print(f'result:{result}')
     result_final = optimize_poems(result)
-    # print(f'result_final:{result_final}')
     return result_final
