@@ -15,7 +15,8 @@ def _get_one_random_poem():
     随机返回一首古诗
     :return:
     """
-    poem = model_to_dict(Poems.query.order_by(func.rand()).first())
+    poem = model_to_dict(Poems.query.filter(Poems.zhailu != '').order_by(func.rand()).first())
+
     return poem
 
 
