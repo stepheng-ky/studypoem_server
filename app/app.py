@@ -31,7 +31,7 @@ def create_app():
     app.logger.setLevel(logging.INFO)
 
     # 创建一个handler，用于写入日志文件
-    file_handler = RotatingFileHandler('app/logs/app.log', maxBytes=10240, backupCount=3)
+    file_handler = RotatingFileHandler('app/logs/app.log', maxBytes=102400000, backupCount=10)
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
     file_handler.addFilter(RequestIDFilter())  # 添加过滤器
