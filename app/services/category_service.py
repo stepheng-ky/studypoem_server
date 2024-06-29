@@ -37,7 +37,7 @@ def optimize_poems(data):
         second_level_category = poem_dict['second_level_category']
         # 如果该second_level_category还没有在分组字典中，则初始化一个空列表
         grouped_poems.setdefault(second_level_category, []).append({
-            'author_short': poem['author_short'],
+            'author': poem['author'],
             'id': poem['id'],
             'title': poem['title']
         })
