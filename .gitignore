@@ -1,2 +1,6 @@
 /.venv/
 .idea/
+app/mp3
+app/tts/mp3/
+app/tts/poems_file
+app/tts/poems_file_fmt
