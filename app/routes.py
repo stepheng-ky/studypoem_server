@@ -17,7 +17,7 @@ from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _ge
 from .services.plan_service import _get_plan_details_by_id, _mark_learned
 from .services.poem_service import _search
 from .services.user_service import _get_user_plans_by_user_id
-from .tts.output_all_poems import _out_poems
+# from .tts.output_all_poems import _out_poems
 
 routes = Blueprint('studypoem', __name__, url_prefix='/studypoem')
 
@@ -293,12 +293,13 @@ def get_png(filename):
         return send_file(f'poems_png/{filename}', mimetype='image/png')
     except FileNotFoundError:
         return f"File {filename} not found", 404
+    except Exception as e:
+        return e,500
 
+# 临时功能，停用
 # @routes.route('/out_all_poems', methods=['GET'])
 # def out_all_poems():
 #     return _out_poems()
-#     except Exception as e:
-#         return e,500
 
 @routes.route('/play/<filename>', methods=['GET'])
 def play_mp3(filename):
