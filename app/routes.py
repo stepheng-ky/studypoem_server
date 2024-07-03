@@ -294,11 +294,12 @@ def get_png(filename):
     except FileNotFoundError:
         return f"File {filename} not found", 404
 
-@routes.route('/out_all_poems', methods=['GET'])
-def out_all_poems():
-    return _out_poems()
-    except Exception as e:
-        return e,500
+# @routes.route('/out_all_poems', methods=['GET'])
+# def out_all_poems():
+#     return _out_poems()
+#     except Exception as e:
+#         return e,500
+
 @routes.route('/play/<filename>', methods=['GET'])
 def play_mp3(filename):
     """
