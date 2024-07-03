@@ -5,7 +5,7 @@
 # @Email   : 1142262478@qq.com
 # @File    : routes.py
 # 功能描述  ：路由控制
-
+import json
 import uuid
 from datetime import datetime
 from flask import jsonify, request, Blueprint, current_app, send_file
@@ -26,14 +26,21 @@ routes = Blueprint('studypoem', __name__, url_prefix='/studypoem')
 def before_request():
     request_id = secure_filename(str(uuid.uuid4()))  # 使用uuid库生成UUID
     request.environ['REQUEST_ID'] = request_id  # 将请求ID存储在request.environ中
-    current_app.logger.info(f"Request: method:{request.method}, url:{request.url}, args:{request.args}")
+    current_app.logger.info(f"请求: 方法:{request.method}, url:{request.url}, 参数:{request.args}")
 
 
 # 记录响应信息的请求钩子
 @routes.after_request
 def after_request(response):
-    current_app.logger.info(f"Response-status_code:{response.status_code}")
-    # 注意：不要在这里记录大型响应体，因为这可能会降低性能
+    current_app.logger.info(f"响应结果-状态码:{response.status_code}")
+    # current_app.logger.info(f"响应结果-数据:{response.data.decode('utf-8')}")
+    try:
+        content = response.get_json()  # 尝试将响应内容解析为 JSON 格式
+        formatted_content = json.dumps(content, indent=4, ensure_ascii=False)
+    except Exception:
+        formatted_content = response.data.decode('utf-8')  # 如果无法解析为 JSON，以 UTF-8 格式显示
+
+    current_app.logger.info(f"响应结果-数据: {formatted_content}")
     return response
 
 
@@ -92,8 +99,11 @@ def get_random_poem():
     随机返回一首古诗
     :return:
     """
-    poem = _get_one_random_poem()
-    current_app.logger.info(f"Response-data: poem:{poem}")
+    try:
+        poem = _get_one_random_poem()
+        current_app.logger.info(f"Response-data: poem:{poem}")
+    except Exception as e:
+        return e,500
     return jsonify(poem)
 
 
@@ -103,8 +113,11 @@ def get_all_poems():
     返回所有古诗
     :return:
     """
-    poems = _get_all_poems()
-    current_app.logger.info(f"Response-data: poems:{poems}")
+    try:
+        poems = _get_all_poems()
+        current_app.logger.info(f"Response-data: poems:{poems}")
+    except Exception as e:
+        return e,500
     return jsonify(poems)
 
 
@@ -115,13 +128,16 @@ def get_poem_by_id():
     test：http://127.0.0.1:5000/studypoem/poem_details?id=af4715c0208f
     :return:
     """
-    # 获取查询参数 'id'
-    poem_id = request.args.get('id')
-    # 调用函数获取诗词详情
-    poem = _get_poem_by_id(poem_id)
-    current_app.logger.info(f"Response-data: poem:{poem}")
-    if poem is None:
-        return jsonify({'error': f'古诗{poem_id} not found!'}), 404
+    try:
+        # 获取查询参数 'id'
+        poem_id = request.args.get('id')
+        # 调用函数获取诗词详情
+        poem = _get_poem_by_id(poem_id)
+        current_app.logger.info(f"Response-data: poem:{poem}")
+        if poem is None:
+            return jsonify({'error': f'古诗{poem_id} not found!'}), 404
+    except Exception as e:
+        return e,500
     return jsonify(poem)
 
 
@@ -131,8 +147,11 @@ def get_all_categories():
     返回所有古诗类别
     :return:
     """
-    categories = _get_all_categories()
-    current_app.logger.info(f"Response-data: categories:{categories}")
+    try:
+        categories = _get_all_categories()
+        current_app.logger.info(f"Response-data: categories:{categories}")
+    except Exception as e:
+        return e,500
     return jsonify(categories)
 
 
@@ -142,13 +161,16 @@ def get_poems_by_category_id():
     根据类别id返回古诗s
     :return:
     """
-    # 获取查询参数 'id'
-    category_id = request.args.get('category_id')
-    # 调用函数获取诗词详情
-    category = _get_poems_by_category_id(category_id)
-    current_app.logger.info(f"Response-data: category:{category}")
-    if category is None:
-        return jsonify({'error': f'类别{category_id} not found!'}), 404
+    try:
+        # 获取查询参数 'id'
+        category_id = request.args.get('category_id')
+        # 调用函数获取诗词详情
+        category = _get_poems_by_category_id(category_id)
+        current_app.logger.info(f"Response-data: category:{category}")
+        if category is None:
+            return jsonify({'error': f'类别{category_id} not found!'}), 404
+    except Exception as e:
+        return e,500
     return jsonify(category)
 
 
@@ -164,13 +186,16 @@ def get_openid():
     }
     :return:
     """
-    code = request.json.get('code')
-    avatarUrl = request.json.get('avatarUrl')
-    nickName = request.json.get('nickName')
-    result = _get_openid(code,avatarUrl,nickName)
-    current_app.logger.info(f"Response-data: result:{result}")
-    if result is None:
-        return jsonify({'error': f'获取用户：{code} not found!'}), 404
+    try:
+        code = request.json.get('code')
+        avatarUrl = request.json.get('avatarUrl')
+        nickName = request.json.get('nickName')
+        result = _get_openid(code,avatarUrl,nickName)
+        current_app.logger.info(f"Response-data: result:{result}")
+        if result is None:
+            return jsonify({'error': f'获取用户：{code} not found!'}), 404
+    except Exception as e:
+        return e,500
     return jsonify(result)
 
 
@@ -181,13 +206,16 @@ def get_user_plans_by_user_id():
     test：http://127.0.0.1:5000/studypoem/user_plans
     :return:
     """
-    # 获取查询参数 'user_id'
-    user_id = request.args.get('user_id')
-    # 调用函数获取学习计划列表
-    plans = _get_user_plans_by_user_id(user_id)
-    current_app.logger.info(f"Response-data: plans:{plans}")
-    if plans is None:
-        return jsonify({'error': f'用户{user_id} not found!'}), 404
+    try:
+        # 获取查询参数 'user_id'
+        user_id = request.args.get('user_id')
+        # 调用函数获取学习计划列表
+        plans = _get_user_plans_by_user_id(user_id)
+        current_app.logger.info(f"Response-data: plans:{plans}")
+        if plans is None:
+            return jsonify({'error': f'用户{user_id} not found!'}), 404
+    except Exception as e:
+        return e,500
     return jsonify(plans)
 
 
@@ -198,13 +226,16 @@ def get_plan_details_by_id():
     test：http://127.0.0.1:5000/studypoem/plan_details?plan_id=1
     :return:
     """
-    # 获取查询参数 'plan_id'
-    plan_id = request.args.get('plan_id')
-    # 调用函数获取学习计划详情
-    plan = _get_plan_details_by_id(plan_id)
-    current_app.logger.info(f"Response-data: plan:{plan}")
-    if plan is None:
-        return jsonify({'error': f'计划{plan_id} not found!'}), 404
+    try:
+        # 获取查询参数 'plan_id'
+        plan_id = request.args.get('plan_id')
+        # 调用函数获取学习计划详情
+        plan = _get_plan_details_by_id(plan_id)
+        current_app.logger.info(f"Response-data: plan:{plan}")
+        if plan is None:
+            return jsonify({'error': f'计划{plan_id} not found!'}), 404
+    except Exception as e:
+        return e,500
     return jsonify(plan)
 
 
@@ -215,13 +246,15 @@ def search():
     test：http://127.0.0.1:5000/studypoem/search?q=李白
     :return:
     """
-    # 获取查询参数 'q'
-    q = request.args.get('q')
-    # 调用函数获取学习计划详情
-    poems = _search(q)
-    current_app.logger.info(f"Response-data: poems:{poems}")
-    if poems is None:
-        return jsonify({'error': f'模糊搜索关键字【{q}】没有结果!'}), 404
+    try:
+        # 获取查询参数 'q'
+        q = request.args.get('q')
+        # 调用函数获取学习计划详情
+        poems = _search(q)
+        if poems is None:
+            return jsonify({'error': f'模糊搜索关键字【{q}】没有结果!'}), 404
+    except Exception as e:
+        return e,500
     return jsonify(poems)
 
 
@@ -237,13 +270,16 @@ def mark_learned():
     }
     :return:
     """
-    plan_id = request.json.get('plan_id')
-    id = request.json.get('id')
-    is_learned = request.json.get('is_learned')
-    result = _mark_learned(plan_id, id, is_learned)
-    current_app.logger.info(f"Response-data: result:{result}")
-    if result is None:
-        return jsonify({'error': f'计划{plan_id}的诗{id}打卡失败!'}), 500
+    try:
+        plan_id = request.json.get('plan_id')
+        id = request.json.get('id')
+        is_learned = request.json.get('is_learned')
+        result = _mark_learned(plan_id, id, is_learned)
+        current_app.logger.info(f"Response-data: result:{result}")
+        if result is None:
+            return jsonify({'error': f'计划{plan_id}的诗{id}打卡失败!'}), 500
+    except Exception as e:
+        return e,500
     return jsonify(result)
 
 @routes.route('/get_png/<filename>', methods=['GET'])
@@ -256,3 +292,5 @@ def get_png(filename):
         return send_file(f'poems_png/{filename}', mimetype='image/png')
     except FileNotFoundError:
         return f"File {filename} not found", 404
+    except Exception as e:
+        return e,500
