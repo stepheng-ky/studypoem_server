@@ -75,7 +75,7 @@ class Config:
 其中微信小程序的APPID、APPSECRET需要自行申请：
 https://mp.weixin.qq.com/  ,登录之后，左侧 开发-->开发管理-->开发设置-->开发者ID-->可以看到AppID、生成AppSecret。  
 
-2. app目录下创建logs目录  
+2. app目录下创建logs目录、mp3目录，上传png和mp3文件  
 3. git clone
 4. 启动服务：  
 本地：python -m app.app  

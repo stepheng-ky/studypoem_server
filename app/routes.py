@@ -294,3 +294,15 @@ def get_png(filename):
         return f"File {filename} not found", 404
     except Exception as e:
         return e,500
+@routes.route('/play/<filename>', methods=['GET'])
+def play_mp3(filename):
+    """
+    获取图片
+    test：http://127.0.0.1:5000/studypoem/play/1
+    """
+    filepath = f'mp3/{filename}.mp3'
+    try:
+        # 使用send_file返回文件
+        return send_file(filepath, mimetype='audio/mpeg')
+    except Exception as e:
+        return str(e), 500
