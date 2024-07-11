@@ -1,20 +1,9 @@
-# -*- coding:utf-8 -*-
-#
-#   author: iflytek
-#
-#  本demo测试时运行的环境为：Windows + Python3.7
-#  本demo测试成功运行时所安装的第三方库及其版本如下：
-#   cffi==1.12.3
-#   gevent==1.4.0
-#   greenlet==0.4.15
-#   pycparser==2.19
-#   six==1.12.0
-#   websocket==0.2.1
-#   websocket-client==0.56.0
-#   合成小语种需要传输小语种文本、使用小语种发音人vcn、tte=unicode以及修改文本编码方式
-#  错误码链接：https://www.xfyun.cn/document/error-code （code返回错误码时必看）
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# 单次调用长度需小于8000字节（约2000汉字）
+# @Time    : 2024/4/29 11:31
+# @Author  : Stepheng
+# @Email   : 1142262478@qq.com
+# @File    : tts_service.py
+# 功能描述  ：tts服务,文字转语音
+
 import random
 import websocket
 import datetime
@@ -29,6 +18,8 @@ from datetime import datetime
 from time import mktime
 import _thread as thread
 import os
+from flask import current_app
+from ..config import Config
 
 STATUS_FIRST_FRAME = 0  # 第一帧的标识
 STATUS_CONTINUE_FRAME = 1  # 中间帧标识
@@ -60,7 +51,6 @@ class Ws_Param(object):
         # 生成RFC1123格式的时间戳
         now = datetime.now()
         date = format_date_time(mktime(now.timetuple()))
-
         # 拼接字符串
         signature_origin = "host: " + "ws-api.xfyun.cn" + "\n"
         signature_origin += "date: " + date + "\n"
@@ -69,7 +59,6 @@ class Ws_Param(object):
         signature_sha = hmac.new(self.APISecret.encode('utf-8'), signature_origin.encode('utf-8'),
                                  digestmod=hashlib.sha256).digest()
         signature_sha = base64.b64encode(signature_sha).decode(encoding='utf-8')
-
         authorization_origin = "api_key=\"%s\", algorithm=\"%s\", headers=\"%s\", signature=\"%s\"" % (
             self.APIKey, "hmac-sha256", "host date request-line", signature_sha)
         authorization = base64.b64encode(authorization_origin.encode('utf-8')).decode(encoding='utf-8')
@@ -81,29 +70,30 @@ class Ws_Param(object):
         }
         # 拼接鉴权参数，生成url
         url = url + '?' + urlencode(v)
-        # print("date: ",date)
-        # print("v: ",v)
         # 此处打印出建立连接时候的url,参考本demo的时候可取消上方打印的注释，比对相同参数时生成的url与自己代码生成的url是否一致
-        # print('websocket url :', url)
+        current_app.logger.debug('websocket url :', url)
         return url
-
 
 # 收到websocket错误的处理
 def on_error(ws, error):
-    # print("### error:", error)
+    current_app.logger.debug("### error:", error)
     pass
 
 # 收到websocket关闭的处理
 def on_close(ws, info, info2):
-    print("### closed ###" + info + info2)
+    current_app.logger.info("### closed ###" + info + info2)
+    pass
 
-def tts(APPID,APISecret,APIKey,text,Voice,Speed,mp3_filename):
-    print(f'开始生成{mp3_filename}')
+def _tts_2000(APPID,APISecret,APIKey,text,voice,speed,mp3_filename):
+    """
+    text生成mp3_filename，text长度2000
+    """
+    current_app.logger.debug(f'开始将{text}生成{mp3_filename}...')
     wsParam = Ws_Param(APPID=APPID, APISecret=APISecret,
                        APIKey=APIKey,
                        Text=text,
-                       Voice=Voice,
-                       Speed=Speed)
+                       Voice=voice,
+                       Speed=speed)
 
     def on_open(ws):
         def run(*args):
@@ -119,7 +109,6 @@ def tts(APPID,APISecret,APIKey,text,Voice,Speed,mp3_filename):
         thread.start_new_thread(run, ())
 
     def on_message(ws, message):
-        print(f'调用 on_message ')
         try:
             message = json.loads(message)
             code = message["code"]
@@ -127,31 +116,93 @@ def tts(APPID,APISecret,APIKey,text,Voice,Speed,mp3_filename):
             audio = message["data"]["audio"]
             audio = base64.b64decode(audio)
             status = message["data"]["status"]
-            # print(message)
             if status == 2:
-                print("完成。")
+                current_app.logger.debug(f"{mp3_filename}生成完成。")
                 ws.close()
             if code != 0:
                 errMsg = message["message"]
-                # print("sid:%s call error:%s code is:%s" % (sid, errMsg, code))
+                current_app.logger.warning("sid:%s call error:%s code is:%s" % (sid, errMsg, code))
             else:
                 with open(mp3_filename, 'ab') as f:
                     f.write(audio)
         except Exception as e:
-            print("receive msg,but parse exception:", e)
-
+            current_app.logger.error("receive msg,but parse exception:", e)
+            pass
     wsUrl = wsParam.create_url()
     ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close)
     ws.on_open = on_open
     ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
 
+
+
+
+def _tts(text,voice="x4_lingxiaoyao_em",speed=40,mp3_filename='tmp'):
+    '''
+    tts，将text按2000分割并生成多个mp3，最后将多个mp3合成一个
+    '''
+    if voice not in _get_voice():
+        return False,f'音色【{voice}】不存在.'
+    if speed not in range(0,101):
+        return False,f'不支持速度：{speed}.只支持(0~100)的整数.'
+    try:
+        APPID = Config.XF_APPID
+        APISecret = Config.XF_APISecret
+        APIKey = Config.XF_APIKey
+        mp3_file = f'app/mp3_tts/{mp3_filename}.mp3'
+        print(f'开始生成语音{mp3_file}:\nvoice:{voice}\nspeed:{speed}')
+        current_app.logger.info(f'开始生成语音{mp3_file}:\ntext:{text}\nvoice:{voice}\nspeed:{speed}')
+        if os.path.exists(mp3_file):
+            os.remove(mp3_file)
+        chunk_size = 2000
+        # 大于2000，先分割文件然后生成多个mp3，最后合成一个mp3
+        if len(text) > chunk_size:
+            text_list = [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
+            for i, text_i in enumerate(text_list):
+                mp3_file_tmp = f"app/mp3_tts/{mp3_filename}-{i}.mp3"
+                _tts_2000(APPID,APISecret,APIKey,text_i, voice, speed, mp3_file_tmp)
+                with open(mp3_file_tmp,'rb') as f:
+                    mp3_file_tmp_f = f.read()
+                with open(mp3_file,'ab') as f:
+                    f.write(mp3_file_tmp_f)
+                    os.remove(mp3_file_tmp)
+        else:
+            _tts_2000(APPID, APISecret, APIKey, text, voice, speed, mp3_file)
+        current_app.logger.info(f'生成语音{mp3_file}完成.\n')
+        print(f'生成语音{mp3_file}完成.\n')
+        return True,'ok'
+    except Exception as e:
+        current_app.logger.error("异常：", e)
+        return False,e
+
+
+def _get_voice():
+    voices = {
+        "xiaoyan":"讯飞小燕",
+        "aisjiuxu":"讯飞许久",
+        "aisxping":"讯飞小萍",
+        "aisjinger":"讯飞小婧",
+        "aisbabyxu":"讯飞许小宝",
+        # 以下音色免费使用期限截至 20240716
+        "x4_lingfeihao_upbeatads":"聆飞皓-广告-男",
+        "x_lele": "讯飞乐乐-女童",
+        "x4_lingxiaoyao_em": "聆小瑶-情感-女",
+        "x4_lingxiaolu_en": "聆小璐-女",
+        "x4_lingxiaoxuan_en": "聆小璇-温柔-女",
+        "x4_lingxiaowan_boy": "聆小琬-小男孩-女",
+        # 以下音色免费使用期限截至 20240719
+        "x4_lingfeizhe_emo":"聆飞哲-情感-男",
+        "x3_xiaodu":"小杜-成都话-女",
+        "x4_lingxiaoyun_talk_emo":"聆小芸-多情感-女",
+        "x2_xiaokun":"讯飞小坤-河南话-男",
+        "x4_mengmengneutral":"讯飞萌萌-中立-童",
+        "x4_lingbosong_bad_talk":"聆伯松-反派老人-男",
+        "x2_wanshu":"讯飞万叔-男",
+        "x4_lingfeihao_eclives":"聆飞皓-直播-男"
+    }
+    return voices
+
 if __name__ == "__main__":
     # 配置信息
-    APPID = '7398a43d'
-    APISecret = 'Y2NjMTJiMGNlODgwZDNhZjVhMTEzNTdl'
-    APIKey = '151fa83f605efae92902b64883caa91f'
-    Speed = 40
-    chunk_size = 2000
     # Voice = "x_lele"
     # Voice = "x4_lingxiaolu_en"
     # Voice = "x4_lingxiaoxuan_en"
@@ -166,38 +217,19 @@ if __name__ == "__main__":
     # Voice = "x4_lingxiaoyao_em"  # ok 35 女 聆小瑶-情感
     # Voice = "x4_lingfeizhe_emo" # ok 40 男 聆飞哲-情感
     # Voice = "x2_wanshu" #  ok 男 讯飞万叔 有一点广播风
-    Voices = ["x4_lingxiaowan_boy", "x4_lingxiaoyao_em", "x4_lingfeizhe_emo", "x2_wanshu"]
-    Voice = random.choice(Voices)  # 随机一个音色
-
-    file_name_filter = 'mp3list.20240704.txt'
-    arr_filter = []
-    with open(file_name_filter, 'r') as file:
-        lines = file.readlines()
-        for line in lines:
-            arr_filter.append(int(line.strip('\\\n')))
-    # for i in range(1000,9035): # max = 9035
+    voices = ["x4_lingxiaowan_boy", "x4_lingxiaoyao_em", "x4_lingfeizhe_emo", "x2_wanshu"]
+    voice = random.choice(voices)  # 随机一个音色
+    speed = 40
+    text = "这是一句完整的测试内容，你猜我是哪儿口音？"
+    mp3_filename = "test20240711193308"
+    _tts(text, voice, speed, mp3_filename)
     # arr_fix = [179, 216, 428, 479, 1455, 1651, 1770, 1957, 2145, 2272, 2655, 3772, 4028, 4161, 4729, 4980, 5139, 6076, 6496, 6969, 6992, 7450, 8386, 8567, 8811]
-    arr_fix = [179]
-    for i in arr_fix: # fix
-        # i = 5
-        if i not in arr_filter:
-            poem_file_name = f'./poems_file_fmt/{i}.txt'
-            # mp3_filename = f"./mp3/{i}-{Voice}-{Speed}.mp3"
-            mp3_filename = f"./mp3/{i}.mp3"
-            # if not os.path.exists(mp3_filename):
-            file = open(poem_file_name, encoding='utf-8')
-            text = file.read()
-            file.close()
-            print(f"------>开始tts:{poem_file_name} --> {mp3_filename}")
-            text_list = [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
-            mp3_tmp_f_list = []
-            for j,text_tmp in enumerate(text_list):
-                mp3_tmp = f"./mp3/{i}-{j}.mp3"
-                tts(APPID,APISecret,APIKey,text_tmp,Voice,Speed,mp3_tmp)
-                with open(mp3_tmp,'rb') as f:
-                    mp3_tmp_f = f.read()
-                with open(mp3_filename,'ab') as f:
-                    f.write(mp3_tmp_f)
-
-        else:
-            print(f'== {i} 已存在，跳过')
+    # # arr_fix = [179]
+    # for i in arr_fix: # fix
+    #     poem_file_name = f'../tts/poems_file_fmt/{i}.txt'
+    #     mp3_filename = f'{i}'
+    #     file = open(poem_file_name, encoding='utf-8')
+    #     text = file.read()
+    #     file.close()
+    #     current_app.logger.info(f"------>开始tts:{poem_file_name}")
+    #     _tts(text,voice,speed,mp3_filename)

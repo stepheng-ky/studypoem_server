@@ -8,3 +8,4 @@
 from .poem_service import _get_one_random_poem,_get_poem_by_id,_get_all_poems
 from .category_service import _get_all_categories,_get_poems_by_category_id
 from .user_service import _get_openid
+from .tts_service import _tts

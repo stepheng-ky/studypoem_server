@@ -17,7 +17,7 @@ from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _ge
 from .services.plan_service import _get_plan_details_by_id, _mark_learned
 from .services.poem_service import _search
 from .services.user_service import _get_user_plans_by_user_id
-# from .tts.output_all_poems import _out_poems
+from .services.tts_service import _tts
 
 routes = Blueprint('studypoem', __name__, url_prefix='/studypoem')
 
@@ -313,3 +313,33 @@ def play_mp3(filename):
         return send_file(filepath, mimetype='audio/mpeg')
     except Exception as e:
         return str(e), 500
+
+
+@routes.route('/tts', methods=['POST'])
+def tts():
+    """
+    text to Speech 文字转语音 使用讯飞的语音合成服务
+    test：http://127.0.0.1:5000/studypoem/tts
+    body:{
+        "text": "测试内容",
+        "voice":"x3_xiaodu",
+        "speed":50,
+        "mp3_filename":"test"
+    }
+    :return:
+    """
+    try:
+        text = request.json.get('text')
+        voice = request.json.get('voice')
+        speed = request.json.get('speed')
+        mp3_filename = request.json.get('mp3_filename')
+        current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+        mp3_filename = f'{mp3_filename}{current_time}'
+        result = _tts(text, voice, speed, mp3_filename)
+        result_code = result[0]
+        result_info = result[1]
+        if not result_code:
+            return f'tts服务异常:{result_info}',500
+    except Exception as e:
+        return e,500
+    return f"{mp3_filename}.mp3 is ok.",200
