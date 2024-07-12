@@ -5,6 +5,8 @@
 # 功能描述  ：tts服务,文字转语音
 
 import random
+
+import requests
 import websocket
 import datetime
 import hashlib
@@ -140,7 +142,7 @@ def _tts(text,voice="x4_lingxiaoyao_em",speed=40,mp3_filename='tmp'):
     '''
     tts，将text按2000分割并生成多个mp3，最后将多个mp3合成一个
     '''
-    if voice not in _get_voice():
+    if voice not in _get_voices():
         return False,f'音色【{voice}】不存在.'
     if speed not in range(0,101):
         return False,f'不支持速度：{speed}.只支持(0~100)的整数.'
@@ -149,7 +151,6 @@ def _tts(text,voice="x4_lingxiaoyao_em",speed=40,mp3_filename='tmp'):
         APISecret = Config.XF_APISecret
         APIKey = Config.XF_APIKey
         mp3_file = f'app/mp3_tts/{mp3_filename}.mp3'
-        print(f'开始生成语音{mp3_file}:\nvoice:{voice}\nspeed:{speed}')
         current_app.logger.info(f'开始生成语音{mp3_file}:\ntext:{text}\nvoice:{voice}\nspeed:{speed}')
         if os.path.exists(mp3_file):
             os.remove(mp3_file)
@@ -168,14 +169,13 @@ def _tts(text,voice="x4_lingxiaoyao_em",speed=40,mp3_filename='tmp'):
         else:
             _tts_2000(APPID, APISecret, APIKey, text, voice, speed, mp3_file)
         current_app.logger.info(f'生成语音{mp3_file}完成.\n')
-        print(f'生成语音{mp3_file}完成.\n')
-        return True,'ok'
+        return True,mp3_filename
     except Exception as e:
         current_app.logger.error("异常：", e)
         return False,e
 
 
-def _get_voice():
+def _get_voices():
     voices = {
         "xiaoyan":"讯飞小燕",
         "aisjiuxu":"讯飞许久",
@@ -200,6 +200,8 @@ def _get_voice():
         "x4_lingfeihao_eclives":"聆飞皓-直播-男"
     }
     return voices
+
+
 
 if __name__ == "__main__":
     # 配置信息

@@ -8,7 +8,8 @@
 import json
 import uuid
 from datetime import datetime
-from flask import jsonify, request, Blueprint, current_app, send_file
+from flask import jsonify, request, Blueprint, current_app, send_file, render_template,make_response
+from urllib3.util import response
 from werkzeug.utils import secure_filename
 from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories, \
     _get_poems_by_category_id, _get_openid
@@ -17,7 +18,7 @@ from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _ge
 from .services.plan_service import _get_plan_details_by_id, _mark_learned
 from .services.poem_service import _search
 from .services.user_service import _get_user_plans_by_user_id
-from .services.tts_service import _tts
+from .services.tts_service import _tts, _get_voices
 
 routes = Blueprint('studypoem', __name__, url_prefix='/studypoem')
 
@@ -46,53 +47,8 @@ def after_request(response):
 
 
 @routes.route('/')
-def helloworld():
-    poem = """
-    将进酒<br><br><br>
-    君不见黄河之水天上来，奔流到海不复回。<br><br>
-    君不见高堂明镜悲白发，朝如青丝暮成雪。<br><br>
-    人生得意须尽欢，莫使金樽空对月。<br><br>
-    天生我材必有用，千金散尽还复来。<br><br>
-    烹羊宰牛且为乐，会须一饮三百杯。<br><br>
-    岑夫子，丹丘生，将进酒，杯莫停。<br><br>
-    与君歌一曲，请君为我侧耳听。<br><br>
-    钟鼓馔玉不足贵，但愿长醉不复醒。<br><br>
-    古来圣贤皆寂寞，惟有饮者留其名。<br><br>
-    陈王昔时宴平乐，斗酒十千恣欢谑。<br><br>
-    主人何为言少钱，径须沽取对君酌。<br><br>
-    五花马、千金裘，呼儿将出换美酒，与尔同销万古愁。
-    """
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    return f'''
-    <html>
-    <head>
-    <style>
-    body {{
-        background-color: gray; /* Light gray background color */
-        font-family: Arial, sans-serif; /* Font family */
-        color: blue; /* Text color */
-    }}
-    .poem-container {{
-        text-align: center;
-        margin-top: 10%;
-        font-size: 24px; /* Font size for the poem */
-    }}
-    .time-container {{
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 14px; /* Font size for the time */
-    }}
-    </style>
-    </head>
-    <body>
-    <div class="poem-container">
-        <p>{poem}</p>
-    </div>
-    <div class="time-container">{current_time}</div>
-    </body>
-    </html>
-    '''
+def index():
+    return render_template('index.html')
 
 @routes.route('/random_poem', methods=['GET'])
 def get_random_poem():
@@ -304,7 +260,7 @@ def get_png(filename):
 @routes.route('/play/<filename>', methods=['GET'])
 def play_mp3(filename):
     """
-    获取图片
+    播放mp3
     test：http://127.0.0.1:5000/studypoem/play/1
     """
     filepath = f'mp3/{filename}.mp3'
@@ -330,6 +286,8 @@ def tts():
     """
     try:
         text = request.json.get('text')
+        if not text:
+            return jsonify({'error': '请输入文本!'}), 400
         voice = request.json.get('voice')
         speed = request.json.get('speed')
         mp3_filename = request.json.get('mp3_filename')
@@ -342,4 +300,45 @@ def tts():
             return f'tts服务异常:{result_info}',500
     except Exception as e:
         return e,500
-    return f"{mp3_filename}.mp3 is ok.",200
+    return f"{result_info}",200
+
+
+@routes.route('/voices', methods=['GET'])
+def get_voices():
+    """
+    返回tts所有音色
+    test：http://127.0.0.1:5000/studypoem/voices
+    :return:
+    """
+    try:
+        voices = _get_voices()
+        if voices is None:
+            return jsonify({'error': f'系统暂无音色!'}), 404
+    except Exception as e:
+        return e,500
+    return jsonify(voices)
+
+
+# @routes.route('/download/<filename>', methods=['GET'])
+# def download(filename):
+#     # 设置要下载的 MP3 文件路径
+#     filepath = f'mp3_tts/{filename}'
+#     try:
+#         return send_file(filepath, as_attachment=True)
+#     except Exception as e:
+#         return str(e), 500
+
+@routes.route('/download/<filename>', methods=['GET'])
+def download(filename):
+    # 设置要下载的 MP3 文件路径
+    filepath = f'mp3_tts/{filename}'
+    try:
+        response = make_response(send_file(filepath, as_attachment=True))
+        response.headers['Content-Disposition'] = 'attachment; filename=' + filename + '.mp3'
+        return response
+    except Exception as e:
+        return str(e), 500
+
+@routes.route('/tts_web')
+def tts_web():
+    return render_template('tts.html')

@@ -50,6 +50,7 @@ pip3 install flask
 pip3 install Flask-SQLAlchemy  
 pip3 install PyMySQL  
 pip3 install requests  
+pip3 install websocket-client
 
 ### mysql安装
 ### prod-部署uwsgi、配置https、nginx等
@@ -61,16 +62,23 @@ pip3 install requests
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 class Config:
-    # 数据库信息
+    # 数据库信息 mysql
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://user:password@ip/dbname'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # 微信小程序信息
+    # 微信小程序信息 https://mp.weixin.qq.com/ 开发管理中查看
     APPID = 'APPID'
     APPSECRET = 'APPSECRET'
 
     # 微信接口域名
     WX_API_URL = 'https://api.weixin.qq.com'
+    
+    # 讯飞语音服务app信息  https://console.xfyun.cn/services/tts 控制台查看
+    XF_APPID = '讯飞APPID'
+    XF_APISecret = '讯飞APISecret'
+    XF_APIKey = '讯飞APIKey'
+    
+    
 ```
 其中微信小程序的APPID、APPSECRET需要自行申请：
 https://mp.weixin.qq.com/  ,登录之后，左侧 开发-->开发管理-->开发设置-->开发者ID-->可以看到AppID、生成AppSecret。  

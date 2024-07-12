@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>TTS生成语音</title>
+  <script src="/static/jquery-3.7.1.min.js"></script>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    #text-input {
+      margin-top: 30px;
+      margin-bottom: 20px;
+      width: 40%;
+      height: 300px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    #generate-btn,
+    #play-btn,
+    #pause-btn,
+    #download-btn {
+      margin-right: 10px;
+      padding: 10px 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      background-color: #4CAF50;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    #generate-btn:hover,
+    #play-btn:hover,
+    #pause-btn:hover,
+    #download-btn:hover {
+      background-color: #45a049;
+    }
+
+    #generate-btn[disabled],
+    #play-btn[disabled],
+    #pause-btn[disabled],
+    #download-btn[disabled] {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    #audio-player {
+      display: none;
+    }
+
+    #overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+    #loading {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      color: #fff;
+      font-size: 24px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+    }
+    #filename-display {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>输入文本，将文本转语音（技术支持：讯飞语音合成功能）</h2>
+  <textarea id="text-input" placeholder="请输入文本" style="width: 40%; height: 300px; text-align: center; font-size: 18px;"></textarea>
+  <div>
+    <button id="generate-btn">生成语音</button>
+    <button id="play-btn" disabled>播放</button>
+    <button id="pause-btn" disabled>暂停</button>
+    <button id="download-btn" disabled>下载</button>
+  </div>
+  <p id="filename-display"> 请输入文本并点击【生成语音】. </p>
+  <audio id="audio-player" controls style="display:none"></audio>
+  <div id="overlay"></div>
+  <div id="loading">生成语音中...</div>
+  <script src="/static/tts.js"></script>
+</body>
+
+</html>
