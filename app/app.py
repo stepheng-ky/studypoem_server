@@ -40,6 +40,8 @@ def create_app():
     app.config.from_object(Config)  # 加载配置
     db.init_app(app)  # 初始化数据库
     app.register_blueprint(routes)  # 注册路由
+    app.static_folder ='static'  # 设置静态文件目录
+    app.template_folder = 'templates'  # 设置模板文件目录
     return app
 
 

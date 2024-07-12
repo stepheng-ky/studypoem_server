@@ -271,6 +271,19 @@ def play_mp3(filename):
         return str(e), 500
 
 
+@routes.route('/play/tts/<filename>', methods=['GET'])
+def play_tts_mp3(filename):
+    """
+    播放mp3
+    test：http://127.0.0.1:5000/studypoem/play/tts/1
+    """
+    filepath = f'mp3_tts/{filename}.mp3'
+    try:
+        # 使用send_file返回文件
+        return send_file(filepath, mimetype='audio/mpeg')
+    except Exception as e:
+        return str(e), 500
+
 @routes.route('/tts', methods=['POST'])
 def tts():
     """
@@ -318,15 +331,6 @@ def get_voices():
         return e,500
     return jsonify(voices)
 
-
-# @routes.route('/download/<filename>', methods=['GET'])
-# def download(filename):
-#     # 设置要下载的 MP3 文件路径
-#     filepath = f'mp3_tts/{filename}'
-#     try:
-#         return send_file(filepath, as_attachment=True)
-#     except Exception as e:
-#         return str(e), 500
 
 @routes.route('/download/<filename>', methods=['GET'])
 def download(filename):
