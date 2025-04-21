@@ -13,6 +13,7 @@ from .config import Config, db
 from .routes import routes
 
 sys.path.extend([r"/data/env/studyPoem-server/studypoem_server"])
+# sys.path.extend([r"D:\xiaochengxu\studypoem_server"])
 
 
 def create_app():
@@ -48,3 +49,4 @@ def create_app():
 if __name__ == '__main__':
     app = create_app()
     app.run()
+    # app.run(debug=True)

@@ -5,8 +5,6 @@
 # 功能描述  ：tts服务,文字转语音
 
 import random
-
-import requests
 import websocket
 import datetime
 import hashlib
@@ -138,7 +136,7 @@ def _tts_2000(APPID,APISecret,APIKey,text,voice,speed,mp3_filename):
 
 
 
-def _tts(text,voice="x4_lingxiaoyao_em",speed=40,mp3_filename='tmp'):
+def _tts(text,voice="xiaoyan",speed=40,mp3_filename='tmp'):
     '''
     tts，将text按2000分割并生成多个mp3，最后将多个mp3合成一个
     '''

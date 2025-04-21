@@ -7,7 +7,7 @@ $(document).ready(function() {
     $.ajax({
       type: "POST",
       url: "/studypoem/tts",
-      data: JSON.stringify({ text: text, voice: "x3_xiaodu", speed: 40, mp3_filename: "tts" }),
+      data: JSON.stringify({ text: text, voice: "xiaoyan", speed: 40, mp3_filename: "tts" }),
       contentType: "application/json",
       success: function(response) {
         $('#overlay').hide();
