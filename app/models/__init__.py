@@ -9,4 +9,5 @@ from .poem import *
 from .category import *
 from .plan import *
 from .user import *
+from .footprints import *
 
