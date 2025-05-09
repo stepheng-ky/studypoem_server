@@ -91,7 +91,7 @@ window.onload = function () {
             tooltip.innerHTML = `${province}<br>${timeText}`;
             if (provinceData && provinceData.light_up_img) {
                 // 使用接口动态生成图片URL
-                const [imgPath, imgName] = provinceData.light_up_img.split('\\');
+                const [imgPath, imgName] = provinceData.light_up_img.split('/');
                 const imgUrl = `/studypoem/get_png/${imgPath}/${imgName}`;
                 tooltip.innerHTML += `<br><img src="${imgUrl}" style="max-width:100px; max-height:100px;">`;
             }

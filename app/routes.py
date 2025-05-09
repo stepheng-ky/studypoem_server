@@ -8,7 +8,7 @@
 import json
 import uuid
 from datetime import datetime
-from flask import jsonify, request, Blueprint, current_app, send_file, render_template,make_response
+from flask import jsonify, request, Blueprint, current_app, send_file, render_template, make_response
 from urllib3.util import response
 from werkzeug.utils import secure_filename
 from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _get_all_categories, \
@@ -51,6 +51,7 @@ def before_request():
         f"[{request_id}] 请求: 方法:{request.method}, url:{request.url}, 参数:{params}"
     )
 
+
 # 记录响应信息的请求钩子
 @routes.after_request
 def after_request(response):
@@ -70,6 +71,7 @@ def after_request(response):
 def index():
     return render_template('index.html')
 
+
 @routes.route('/random_poem', methods=['GET'])
 def get_random_poem():
     """
@@ -80,7 +82,7 @@ def get_random_poem():
         poem = _get_one_random_poem()
         current_app.logger.info(f"Response-data: poem:{poem}")
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(poem)
 
 
@@ -94,7 +96,7 @@ def get_all_poems():
         poems = _get_all_poems()
         current_app.logger.info(f"Response-data: poems:{poems}")
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(poems)
 
 
@@ -114,7 +116,7 @@ def get_poem_by_id():
         if poem is None:
             return jsonify({'error': f'古诗{poem_id} not found!'}), 404
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(poem)
 
 
@@ -128,7 +130,7 @@ def get_all_categories():
         categories = _get_all_categories()
         current_app.logger.info(f"Response-data: categories:{categories}")
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(categories)
 
 
@@ -147,7 +149,7 @@ def get_poems_by_category_id():
         if category is None:
             return jsonify({'error': f'类别{category_id} not found!'}), 404
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(category)
 
 
@@ -167,12 +169,12 @@ def get_openid():
         code = request.json.get('code')
         avatarUrl = request.json.get('avatarUrl')
         nickName = request.json.get('nickName')
-        result = _get_openid(code,avatarUrl,nickName)
+        result = _get_openid(code, avatarUrl, nickName)
         current_app.logger.info(f"Response-data: result:{result}")
         if result is None:
             return jsonify({'error': f'获取用户：{code} not found!'}), 404
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(result)
 
 
@@ -192,7 +194,7 @@ def get_user_plans_by_user_id():
         if plans is None:
             return jsonify({'error': f'用户{user_id} not found!'}), 404
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(plans)
 
 
@@ -212,7 +214,7 @@ def get_plan_details_by_id():
         if plan is None:
             return jsonify({'error': f'计划{plan_id} not found!'}), 404
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(plan)
 
 
@@ -231,7 +233,7 @@ def search():
         if poems is None:
             return jsonify({'error': f'模糊搜索关键字【{q}】没有结果!'}), 404
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(poems)
 
 
@@ -256,8 +258,9 @@ def mark_learned():
         if result is None:
             return jsonify({'error': f'计划{plan_id}的诗{id}打卡失败!'}), 500
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(result)
+
 
 @routes.route('/get_png/<filepath>/<filename>', methods=['GET'])
 def get_png(filepath, filename):
@@ -271,6 +274,7 @@ def get_png(filepath, filename):
         return f"File {filename} not found", 404
     except Exception as e:
         return e, 500
+
 
 # 临时功能，停用
 # @routes.route('/out_all_poems', methods=['GET'])
@@ -304,6 +308,7 @@ def play_tts_mp3(filename):
     except Exception as e:
         return str(e), 500
 
+
 @routes.route('/tts', methods=['POST'])
 def tts():
     """
@@ -330,10 +335,10 @@ def tts():
         result_code = result[0]
         result_info = result[1]
         if not result_code:
-            return f'tts服务异常:{result_info}',500
+            return f'tts服务异常:{result_info}', 500
     except Exception as e:
-        return e,500
-    return f"{result_info}",200
+        return e, 500
+    return f"{result_info}", 200
 
 
 @routes.route('/voices', methods=['GET'])
@@ -348,7 +353,7 @@ def get_voices():
         if voices is None:
             return jsonify({'error': f'系统暂无音色!'}), 404
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(voices)
 
 
@@ -362,6 +367,7 @@ def download(filename):
         return response
     except Exception as e:
         return str(e), 500
+
 
 @routes.route('/tts_web')
 def tts_web():
@@ -378,7 +384,7 @@ def get_all_footprints():
         footprints = _get_all_footprints()
         current_app.logger.info(f"Response-data: footprints:{footprints}")
     except Exception as e:
-        return e,500
+        return e, 500
     return jsonify(footprints)
 
 
@@ -416,5 +422,4 @@ def light_footprint():
         else:
             return jsonify({"status": "fail", "message": result}), 500
     except Exception as e:
-        return e,500
-
+        return e, 500
