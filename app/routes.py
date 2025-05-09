@@ -15,7 +15,7 @@ from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _ge
     _get_poems_by_category_id, _get_openid
 
 # 使用 prefix 参数定义蓝图的前缀为 '/studypoem'
-from .services.footprints_service import _get_all_footprints
+from .services.footprints_service import _get_all_footprints, _light_footprint
 from .services.plan_service import _get_plan_details_by_id, _mark_learned
 from .services.poem_service import _search
 from .services.user_service import _get_user_plans_by_user_id
@@ -27,10 +27,29 @@ routes = Blueprint('studypoem', __name__, url_prefix='/studypoem')
 # 记录请求信息的请求钩子
 @routes.before_request
 def before_request():
-    request_id = secure_filename(str(uuid.uuid4()))  # 使用uuid库生成UUID
-    request.environ['REQUEST_ID'] = request_id  # 将请求ID存储在request.environ中
-    current_app.logger.info(f"请求: 方法:{request.method}, url:{request.url}, 参数:{request.args}")
+    request_id = secure_filename(str(uuid.uuid4()))
+    request.environ['REQUEST_ID'] = request_id
 
+    # 打印请求信息时，将参数统一格式化为 dict
+    if request.method == 'GET':
+        params = dict(request.args)
+    elif request.method in ['POST', 'PUT', 'PATCH']:
+        content_type = request.headers.get('Content-Type', '')
+        if 'application/json' in content_type:
+            try:
+                params = request.get_json()
+            except Exception:
+                params = 'Invalid JSON'
+        elif 'application/x-www-form-urlencoded' in content_type:
+            params = dict(request.form)
+        else:
+            params = 'Unsupported Content-Type'
+    else:
+        params = {}
+
+    current_app.logger.info(
+        f"[{request_id}] 请求: 方法:{request.method}, url:{request.url}, 参数:{params}"
+    )
 
 # 记录响应信息的请求钩子
 @routes.after_request
@@ -240,18 +259,18 @@ def mark_learned():
         return e,500
     return jsonify(result)
 
-@routes.route('/get_png/<filename>', methods=['GET'])
-def get_png(filename):
+@routes.route('/get_png/<filepath>/<filename>', methods=['GET'])
+def get_png(filepath, filename):
     """
     获取图片
     test：http://127.0.0.1:5000/studypoem/get_png/test.png
     """
     try:
-        return send_file(f'poems_png/{filename}', mimetype='image/png')
+        return send_file(f'{filepath}/{filename}', mimetype='image/png')
     except FileNotFoundError:
         return f"File {filename} not found", 404
     except Exception as e:
-        return e,500
+        return e, 500
 
 # 临时功能，停用
 # @routes.route('/out_all_poems', methods=['GET'])
@@ -366,3 +385,36 @@ def get_all_footprints():
 @routes.route('/footprints')
 def footprints():
     return render_template('footprints.html')
+
+
+@routes.route('/light_footprint', methods=['POST'])
+def light_footprint():
+    """
+    点亮足迹
+    test：http://127.0.0.1:5000/studypoem/light_footprint
+    body:{
+        "province": "河南",
+        "light_up_img":"img地址",
+        "light_up_time": "2025-04-11"
+    }
+    :return:
+    """
+    try:
+        province = request.form.get('province')
+        current_app.logger.info(f"province:{province}")
+        light_up_img = request.files.get('light_up_img')
+        current_app.logger.info(f"light_up_img:{light_up_img}")
+        light_up_time = request.form.get('light_up_time')
+        current_app.logger.info(f"light_up_time:{light_up_time}")
+
+        if not all([province, light_up_img, light_up_time]):
+            return jsonify({"status": "fail", "message": "缺少必要参数"}), 400
+        result = _light_footprint(province, light_up_img, light_up_time)
+        current_app.logger.info(f"Response-data: result:{result}")
+        if result == "success":
+            return jsonify({"status": "success"})
+        else:
+            return jsonify({"status": "fail", "message": result}), 500
+    except Exception as e:
+        return e,500
+

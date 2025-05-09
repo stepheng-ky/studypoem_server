@@ -53,6 +53,7 @@ pip3 install Flask-SQLAlchemy
 pip3 install PyMySQL  
 pip3 install requests  
 pip3 install websocket-client
+pip3 install pypinyin
 
 ### mysql安装
 ### prod-部署uwsgi、配置https、nginx等

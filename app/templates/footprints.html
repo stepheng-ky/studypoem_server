@@ -8,7 +8,17 @@
 </head>
 <body>
 <div class="container">
-    <svg id="china-map" xmlns="http://www.w3.org/2000/svg" pointer-events="auto" class="leaflet-zoom-animated" width="1985" height="1288" viewBox="-165 -107 1985 1288" style="transform: translate3d(-165px, -107px, 0px) scale(1);">
+<!--    <svg id="china-map" xmlns="http://www.w3.org/2000/svg" pointer-events="auto" class="leaflet-zoom-animated" width="1985" height="1288"-->
+<!--         viewBox="-250 -300 1985 1288" style="transform: translate3d(-165px, -107px, 0px) scale(1);">-->
+    <svg id="china-map"
+         preserveAspectRatio="xMidYMid meet"
+         xmlns="http://www.w3.org/2000/svg"
+         pointer-events="auto"
+         class="leaflet-zoom-animated"
+         width="1985"
+         height="1288"
+         viewBox="50 -20 1323 859"
+         style="transform: translate3d(-165px, -107px, 0px) scale(1);">
         <g>
             <path id="北京" class="leaflet-interactive" stroke="#8B908F" stroke-opacity="0.5" stroke-width="1" stroke-linecap="butt" stroke-linejoin="bevel" fill="#eee" fill-opacity="0.5" fill-rule="evenodd" d="M1087 411L1089 409L1081 408L1076 403L1076 401L1072 402L1072 404L1070 404L1072 406L1069 406L1065 411L1064 410L1061 412L1061 414L1064 417L1056 422L1058 427L1056 427L1057 430L1061 433L1064 431L1069 432L1072 435L1071 434L1074 431L1078 431L1080 429L1080 426L1077 424L1077 422L1084 422L1087 419L1084 412L1087 411z" />
             <path id="天津" class="leaflet-interactive" stroke="#8B908F" stroke-opacity="0.5" stroke-width="1" stroke-linecap="butt" stroke-linejoin="bevel" fill="#eee" fill-opacity="0.5" fill-rule="evenodd" d="M1093 436L1096 433L1095 431L1093 431L1092 433L1091 432L1092 431L1089 424L1094 423L1089 418L1087 418L1087 420L1083 424L1084 430L1083 431L1080 429L1077 432L1080 442L1077 443L1076 447L1085 453L1093 450L1091 448L1095 447L1094 443L1098 439L1095 436L1089 436L1092 435zM1094 436L1095 435L1094 436z" />
@@ -52,11 +62,16 @@
 <div id="modal" class="hidden">
     <div class="modal-content">
         <span id="close-modal">&times;</span>
-        <form id="footprint-form">
+        <form id="footprint-form" enctype="multipart/form-data">
             <label for="province">省份:</label>
             <select id="province" required></select>
+            <br>
             <label for="date">日期:</label>
             <input type="date" id="date" required>
+            <br>
+            <label for="image">留念照片:</label>
+            <input type="file" id="image" accept="image/*" required>
+            <br>
             <input type="submit" value="确认">
         </form>
     </div>

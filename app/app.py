@@ -15,7 +15,6 @@ from .routes import routes
 sys.path.extend([r"/data/env/studyPoem-server/studypoem_server"])
 # sys.path.extend([r"D:\xiaochengxu\studypoem_server"])
 
-
 def create_app():
     app = Flask(__name__)
 
