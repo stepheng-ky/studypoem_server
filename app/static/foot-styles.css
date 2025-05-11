@@ -39,7 +39,7 @@ body {
     transition: all 0.3s ease;
     position: fixed;
     top: 100px;    /* 距离顶部 */
-    left: 100px;   /* 距离左侧 */
+    left: 46%;   /* 距离左侧 */
     z-index: 2;   /* 确保按钮在最上层（地图 z-index 默认较低） */
 }
 
