@@ -107,3 +107,7 @@ select, input[type="date"], input[type="submit"] {
 input[type="submit"] {
     cursor: pointer;
 }
+
+.hidden {
+    display: none;
+}

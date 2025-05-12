@@ -336,3 +336,47 @@ function addProvinceNamesToMap() {
         }
     });
 }
+
+// 获取 DOM 元素
+const activateButton = document.getElementById("点亮足迹");
+const passwordModal = document.getElementById("password-modal");
+const mainModal = document.getElementById("modal");
+
+const passwordInput = document.getElementById("password-input");
+const passwordSubmit = document.getElementById("password-submit");
+const closePasswordModal = document.getElementById("close-password-modal");
+const closeModal = document.getElementById("close-modal");
+
+const provinceSelect = document.getElementById("province");
+
+// 模拟正确密码（可以改成从服务器获取）
+const correctPassword = "20200605"; // 设置你需要的暗号
+
+// 显示密码弹框
+activateButton.addEventListener("click", () => {
+    passwordModal.classList.remove("hidden");
+});
+
+// 关闭密码弹框
+closePasswordModal.addEventListener("click", () => {
+    passwordModal.classList.add("hidden");
+    passwordInput.value = ""; // 清空输入
+});
+
+// 提交暗号验证
+passwordSubmit.addEventListener("click", () => {
+    const enteredPassword = passwordInput.value;
+
+    if (enteredPassword === correctPassword) {
+        passwordModal.classList.add("hidden");
+        passwordInput.value = ""; // 清空输入
+        mainModal.classList.remove("hidden"); // 显示省份选择弹框
+    } else {
+        alert("暗号错误，请重试！");
+    }
+});
+
+// 关闭省份弹框
+closeModal.addEventListener("click", () => {
+    mainModal.classList.add("hidden");
+});
