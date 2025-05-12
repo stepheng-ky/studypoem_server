@@ -41,14 +41,12 @@ window.onload = function () {
     addProvinceNamesToMap();
 
     // 显示密码弹框
-    activateButton.addEventListener("click", function () {
-        passwordModal.classList.remove("hidden");
-    });
+    passwordModal.classList.remove("hidden");
 
-    // 关闭密码弹框
-    closePasswordModal.addEventListener("click", function () {
-        passwordModal.classList.add("hidden");
-        passwordInput.value = ""; // 清空输入
+    // 点亮弹框
+    activateButton.addEventListener("click", function () {
+        updateProvinceDropdown(); // 每次打开模态框前更新下拉框
+        mainModal.classList.remove("hidden"); // 显示省份选择弹框
     });
 
     // 提交暗号验证
@@ -58,8 +56,6 @@ window.onload = function () {
         if (enteredPassword === correctPassword1 || enteredPassword === correctPassword2) {
             passwordModal.classList.add("hidden");
             passwordInput.value = ""; // 清空输入
-            updateProvinceDropdown(); // 每次打开模态框前更新下拉框
-            mainModal.classList.remove("hidden"); // 显示省份选择弹框
         } else {
             alert("暗号错误，请重试！");
         }
