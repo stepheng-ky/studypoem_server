@@ -16,9 +16,6 @@ window.onload = function () {
     const passwordSubmit = document.getElementById("password-submit");
     const closePasswordModal = document.getElementById("close-password-modal");
     const closeModal = document.getElementById("close-modal");
-    // 密码
-    const correctPassword1 = "19910908";
-    const correctPassword2 = "20200605";
 
     // 加载省份选项
     provinces.forEach(province => {
@@ -53,12 +50,34 @@ window.onload = function () {
     passwordSubmit.addEventListener("click", function () {
         const enteredPassword = passwordInput.value;
 
-        if (enteredPassword === correctPassword1 || enteredPassword === correctPassword2) {
-            passwordModal.classList.add("hidden");
-            passwordInput.value = ""; // 清空输入
-        } else {
-            alert("暗号错误，请重试！");
+        if (!enteredPassword) {
+            alert("请输入暗号！");
+            return;
         }
+
+        // 发起 POST 请求到后端接口
+        fetch('/studypoem/check_footprint_password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                password: enteredPassword
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                passwordModal.classList.add("hidden");
+                passwordInput.value = ""; // 清空输入
+            } else {
+                alert("暗号错误，请重试！");
+            }
+        })
+        .catch(error => {
+            console.error('请求出错:', error);
+            alert("网络错误，请重试！");
+        });
     });
 
     // 关闭省份弹框

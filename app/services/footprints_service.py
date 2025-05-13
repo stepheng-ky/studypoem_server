@@ -8,10 +8,11 @@
 import os
 from flask import current_app
 from werkzeug.utils import secure_filename
-from ..models import Footprints
+from ..models import Footprints, FootprintsPass
 from ..utils import model_to_dict
 from ..config import db
 from pypinyin import pinyin, Style
+
 
 def _get_all_footprints():
     """
@@ -68,3 +69,16 @@ def _light_footprint(province, light_up_img, light_up_time):
     except Exception as e:
         db.session.rollback()
         return f"fail: {str(e)}"
+
+
+def _check_footprint_password(your_password):
+    """
+    检查密码是否正确（匹配 Footprints 表中的 password 字段）
+    :param password: 密码
+    :return: True 或 False
+    """
+    footprint = FootprintsPass.query.filter_by(password=your_password).first()
+    if footprint:
+        return True
+    return False
+

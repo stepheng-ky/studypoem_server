@@ -13,3 +13,8 @@ class Footprints(db.Model):
     province = db.Column(db.String(255), nullable=False)
     light_up_time = db.Column(db.String(255), nullable=False)
     light_up_img = db.Column(db.String(255))
+
+class FootprintsPass(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    password = db.Column(db.String(255), nullable=False)
+

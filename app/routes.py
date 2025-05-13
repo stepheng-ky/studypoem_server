@@ -15,7 +15,7 @@ from .services import _get_one_random_poem, _get_poem_by_id, _get_all_poems, _ge
     _get_poems_by_category_id, _get_openid
 
 # 使用 prefix 参数定义蓝图的前缀为 '/studypoem'
-from .services.footprints_service import _get_all_footprints, _light_footprint
+from .services.footprints_service import _get_all_footprints, _light_footprint, _check_footprint_password
 from .services.plan_service import _get_plan_details_by_id, _mark_learned
 from .services.poem_service import _search
 from .services.user_service import _get_user_plans_by_user_id
@@ -423,3 +423,18 @@ def light_footprint():
             return jsonify({"status": "fail", "message": result}), 500
     except Exception as e:
         return e, 500
+
+@routes.route('/check_footprint_password', methods=['POST'])
+def check_footprint_password():
+    """
+    接收密码并校验是否正确
+    :return: JSON 响应
+    """
+    password = request.get_json().get('password')
+    if not password:
+        return jsonify({"status": "fail", "message": "缺少密码参数"}), 400
+    result = _check_footprint_password(password)
+    if result:
+        return jsonify({"status": "success"})
+    else:
+        return jsonify({"status": "fail", "message": "密码校验失败！"}), 500
